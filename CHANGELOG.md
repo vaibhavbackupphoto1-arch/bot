@@ -1,0 +1,344 @@
+# Changelog
+
+<!-- One section per version: `## 1.0.62 (2026-09-09)`. Write freely under
+     it: prose, ### headings, bullets. Notes for the next release go under
+     `## Unreleased
+`. Sections here are kept as written; a release nobody
+     wrote up says "Bug fixes, improvements in quality and speed." -->
+
+## Unreleased
+
+The app has a new rail for Bots, Sessions, Routines, Artifacts and Library. Library brings together connectors, messaging, MCP servers, skills and tools. Settings has separate pages and search. The system draws the title bar, and your light, dark or system theme applies before the window appears.
+
+A companion around the Mac notch, or by the Windows clock, shows bot activity and requests your attention. You can turn it off in General settings. Sounds have per-bot levels and quiet hours; system notifications are silent. Bots keep their looks in the new avatar style, math renders as replies arrive, and the tour can be replayed from Settings.
+
+The built-in code editor is replaced by Open in editor. Sessions are grouped by folder, and update notices appear in the title bar.
+
+On first launch, Updating your data may appear while conversations are converted. Earlier data files remain in place. Going back to the previous version shows the data from before the update; conversations and settings changed after the update will not appear there. Read the Going back support article before downgrading.
+
+- Artifacts refresh automatically; the Refresh button is removed.
+- The rail opens the Bots sidebar directly.
+- Start a bot chat from its bot page; the start page no longer has a composer.
+- Each rail item has its own sidebar.
+- Open connectors and messaging from Library.
+- The companion shows ongoing work; the background Task still running notification is removed.
+- Finishing setup opens the saved destination without switching a workspace.
+- Setup no longer resets an open tour.
+- Opening a routine run keeps your current workspace.
+- Open scheduled tasks and run reports from Routines in the rail.
+
+
+A smaller download and install: the package no longer carries a second copy
+of the interface libraries that are already built into the app.
+
+The app reports which first-run setup steps it reached, so a setup that stops
+partway can be found and fixed. It follows the same setting as the log sync.
+
+Pasting a model provider's API key is the same dialog everywhere: from
+onboarding, from the Models page, and from Connect Gemini in the model picker,
+which now opens it in place instead of sending you to Settings. It names the
+errand, carries the link to the provider's console, and says when a key is
+already saved.
+
+A reply that drifts into another language is caught even when it is full of
+English technical terms. A Chinese answer to an English question, with
+GitHub, account names and token scopes in it, read as "no clear language" and
+was never asked to answer again; now any script the user did not write in is
+drift once it is more than a stray name.
+
+X search now runs on your Abacus.AI account, reading X's own index; the xAI
+Live Search key and switch are gone, since xAI retired that service.
+
+The agent no longer refers to documentation that is not shipped with the
+app when asked about skills or extensions.
+
+The free OpenRouter models offered in the picker, and the ones RouteLLM -
+Open falls back to, are now only ones that can call tools. A music model
+priced at zero was listed, and every turn on it failed.
+
+Launching the app from a terminal that later closes no longer fills the log
+with the same error tens of thousands of times.
+
+When a free model fails, the router now tries every other model in the pool
+before giving up, instead of stopping after five switches.
+
+A bot's `bash` now runs in the same shell as a chat's: the bundled shell on
+Windows, the sandbox elsewhere. Bots on Windows without Git Bash answered
+"No bash shell found" for every command.
+
+A routine set up for a folder now runs entirely inside it: the prompt names
+that folder as the working directory, and the routine's own notes and run
+history live inside it too (under `.abacusai-bot/routines/`, ignored by git)
+instead of in the app's home. Before, the prompt pointed the model at the
+app's folder and its output landed there.
+
+Under Full access the file tools no longer refuse a path outside the
+workspace, and a folder the app pre-allows (a routine's own) is never
+refused. The refusal only sent the model to the shell, which is not fenced.
+
+Every connector on the Connectors page can be connected from the chat: ask
+the agent for one and it puts up the Connect button, whether that is an
+account connector, GitHub (the button opens the same personal-access-token
+dialog as the GitHub card), a chat app, or a tool server such as Playwright,
+Notion or Hugging Face. Before, the agent knew only a hand-kept few by name
+and answered "Playwright isn't a connector" for the rest; now one registry
+lists them all, and every screen (Connectors, onboarding, the chat card and
+the MCP summary) reads which are connected from the same place.
+
+A file link written with `~`, such as a screenshot on the Desktop, now opens
+in the preview pane's file reader instead of reporting the file missing. A
+file outside the workspace says so, rather than "not found". A link whose
+name has spaces, which markdown writes as `%20`, opens too: the preview was
+asking for a file literally named with the escapes. And a file whose name the
+agent transcribed with an ordinary space where the disk has an invisible one
+(macOS screenshots have a narrow no-break space before "AM") now opens, where
+before every screenshot link the agent wrote reported the file missing. The
+files card finds such a file the same way, and lists it under its real name.
+
+The Capabilities page now lists `disconnect_connector` under Connectors, with
+a description for both connector tools.
+
+Where the sandbox cannot run (Linux without bubblewrap and socat, a Windows
+older than 24H2), commands run unconfined and a dismissible notice at the top
+of the chat says so, instead of every command being refused.
+
+When the sandbox refuses something a command tried, a card now lists it and
+"Allow" runs the command again with that access, instead of the agent working
+around the refusal. Node tools are told to use the proxy.
+
+The kernel sandbox is now on by default and applies in Bypass mode too, which
+the app starts in; Settings > Capabilities switches it off. Bypass still asks
+about a hidden credential store a command names and a host not on the allow
+list.
+
+On macOS and Linux the kernel sandbox now runs on Anthropic's sandbox
+runtime. A sandboxed command's outbound connections go through its proxies:
+package registries and code hosts are allowed, any other host asks first and
+the connection waits for the answer. `ABACUSAI_BOT_SANDBOX_HOSTS` pre-approves
+hosts. Linux needs `bubblewrap` and `socat`.
+
+The kernel sandbox now runs on Windows 11 24H2 and newer, through a Microsoft
+process container. The Settings toggle says so on an older Windows instead of
+claiming the whole platform is unsupported.
+
+The kernel sandbox now hides credential stores from shell commands: SSH and
+GPG private keys, cloud CLI credential caches, browser profiles, the macOS
+keychain files and the app's own settings. Configuration beside them stays
+readable. A command that names one of the developer stores asks first, and
+the approval card lists the paths; "Always" keeps them readable for the
+session. `ABACUSAI_BOT_SANDBOX_READABLE` exempts a path without a prompt.
+
+Telegram no longer creates an assistant bot of its own through BotFather.
+Messages to you arrive from the shared Abacus AI bot, which the Telegram setup
+links; the connected account still reads chats and messages other people. The
+optional bot-token field is gone, and a token the app minted earlier is removed
+from disk on the next launch. Sending files on Telegram is not available for
+now.
+
+## 1.0.61 (2026-09-08)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.60 (2026-09-07)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.59 (2026-09-07)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.58 (2026-09-04)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.57 (2026-09-04)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.55 (2026-09-03)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.54 (2026-09-03)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.53 (2026-09-02)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.52 (2026-09-02)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.51 (2026-09-02)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.49 (2026-09-02)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.48 (2026-09-02)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.47 (2026-09-02)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.46 (2026-09-01)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.45 (2026-09-01)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.44 (2026-09-01)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.43 (2026-09-01)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.42 (2026-09-01)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.41 (2026-09-01)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.40 (2026-09-01)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.39 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.38 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.37 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.36 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.35 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.32 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.31 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.30 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.29 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.28 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.27 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.26 (2026-08-31)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.25 (2026-08-28)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.24 (2026-08-28)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.23 (2026-08-28)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.22 (2026-08-28)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.20 (2026-08-28)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.19 (2026-08-27)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.18 (2026-08-27)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.15 (2026-08-27)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.14 (2026-08-26)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.13 (2026-08-25)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.12 (2026-08-25)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.10 (2026-08-24)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.9 (2026-08-24)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.8 (2026-08-23)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.7 (2026-08-21)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.6 (2026-08-21)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.5 (2026-08-21)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.4 (2026-08-21)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.3 (2026-08-21)
+
+Bug fixes, improvements in quality and speed.
+
+## 1.0.0 (2026-08-19)
+
+Bug fixes, improvements in quality and speed.
